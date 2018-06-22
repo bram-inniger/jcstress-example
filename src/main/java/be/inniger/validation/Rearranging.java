@@ -31,7 +31,7 @@
 package be.inniger.validation;
 
 import org.openjdk.jcstress.annotations.*;
-import org.openjdk.jcstress.infra.results.IntResult2;
+import org.openjdk.jcstress.infra.results.BooleanResult2;
 
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE;
 import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE_INTERESTING;
@@ -40,26 +40,26 @@ import static org.openjdk.jcstress.annotations.Expect.ACCEPTABLE_INTERESTING;
 @JCStressTest
 @Description("The JVM is allowed to rearrange non-related statements as it sees fit before synchronization points happen")
 
-@Outcome(id = "0, 0", expect = ACCEPTABLE_INTERESTING, desc = "JVM can rearrange statement withing a thread")
-@Outcome(id = "1, 0", expect = ACCEPTABLE, desc = "Thread 1 is able to increment a before Thread 2 assigns it to r, but writes b away before Thread 2 can increment")
-@Outcome(id = "0, 1", expect = ACCEPTABLE, desc = "Thread 2 is able to increment b before Thread 1 assigns it to r, but writes a away before Thread 1 can increment")
-@Outcome(id = "1, 1", expect = ACCEPTABLE, desc = "Due to scheduling both Thread 1 and 2 first run their increment steps, then both assign the incremented a and b to r")
+@Outcome(id = "false, false", expect = ACCEPTABLE_INTERESTING, desc = "JVM can rearrange statement withing a thread")
+@Outcome(id = "true, false", expect = ACCEPTABLE, desc = "Thread 1 is able to set a before Thread 2 assigns it to r, but writes b away before Thread 2 can set it")
+@Outcome(id = "false, true", expect = ACCEPTABLE, desc = "Thread 2 is able to set b before Thread 1 assigns it to r, but writes a away before Thread 1 can set it")
+@Outcome(id = "true, true", expect = ACCEPTABLE, desc = "Due to scheduling both Thread 1 and 2 first run their set steps, then both assign the now true a and b to r")
 
 @State
 public class Rearranging {
 
-	private int a = 0;
-	private int b = 0;
+	private boolean a = false;
+	private boolean b = false;
 
 	@Actor
-	public void actor1(IntResult2 r) {
-		a++;
+	public void actor1(BooleanResult2 r) {
+		a = true;
 		r.r1 = b;
 	}
 
 	@Actor
-	public void actor2(IntResult2 r) {
-		b++;
+	public void actor2(BooleanResult2 r) {
+		b = true;
 		r.r2 = a;
 	}
 }

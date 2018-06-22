@@ -5,15 +5,15 @@ package be.inniger.questions;
  */
 public class Question2 {
 
-	private int a = 0;
-	private int b = 0;
+	private boolean a = false;
+	private boolean b = false;
 
 	public static void main(String... args) throws InterruptedException {
 		Question2 question = new Question2();
 		Result result = new Result();
 
-		Thread thread1 = new Thread(() -> question.incrementA_AndAssignB(result));
-		Thread thread2 = new Thread(() -> question.incrementB_AndAssignA(result));
+		Thread thread1 = new Thread(() -> question.setA_AndAssignB(result));
+		Thread thread2 = new Thread(() -> question.setB_AndAssignA(result));
 
 		thread1.start();
 		thread2.start();
@@ -24,19 +24,19 @@ public class Question2 {
 		System.out.println(result);
 	}
 
-	private void incrementA_AndAssignB(Result result) {
-		a++;
+	private void setA_AndAssignB(Result result) {
+		a = true;
 		result.resultB = b;
 	}
 
-	private void incrementB_AndAssignA(Result result) {
-		b++;
+	private void setB_AndAssignA(Result result) {
+		b = true;
 		result.resultA = a;
 	}
 
 	private static class Result {
-		private int resultA;
-		private int resultB;
+		private boolean resultA;
+		private boolean resultB;
 
 		@Override
 		public String toString() {
